@@ -10,14 +10,18 @@
 </head>
 <body>
 <div class="container">
-    <div class="row">
-        <div class="col-6">
-            <x-su-select :items="$themes"></x-su-select>
+    <form action="/test" method="POST">
+        @csrf
+        <div class="row">
+            <div class="col-3">
+                <x-su-select :items="$themes"></x-su-select>
+            </div>
+            <div class="col-3">
+                <x-su-button>Choose Theme</x-su-button>
+            </div>
         </div>
-        <div class="col-6">
-            <x-su-button>Check Theme</x-su-button>
-        </div>
-    </div>
+    </form>
+
 </div>
 
 @include('theme::assets')

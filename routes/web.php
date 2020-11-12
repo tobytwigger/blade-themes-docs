@@ -18,3 +18,4 @@ Route::get('/', function () {
 });
 
 Route::get('/test', [\App\Http\Controllers\TestController::class, 'index']);
+Route::post('/test', [\App\Http\Controllers\TestController::class, 'change']);

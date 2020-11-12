@@ -24,4 +24,12 @@ class TestController extends Controller
             ]
         ]);
     }
+
+    public function change(Request $request)
+    {
+        $request->validate([
+            'theme' => 'required|string'
+        ]);
+        return redirect()->to('/test?theme=' . $request->input('theme'));
+    }
 }
