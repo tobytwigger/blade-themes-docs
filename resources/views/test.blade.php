@@ -6,14 +6,21 @@
 
     <title>Test</title>
 
-    @stack('scripts')
-    <link href="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.css" rel="stylesheet">
-    <script src="https://unpkg.com/material-components-web@latest/dist/material-components-web.min.js"></script>
-    <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
 
 </head>
 <body>
-<x-su-button>This is a test button</x-su-button>
-<x-su-select></x-su-select>
+<div class="container">
+    <div class="row">
+        <div class="col-6">
+            <x-su-select :items="$themes"></x-su-select>
+        </div>
+        <div class="col-6">
+            <x-su-button>Check Theme</x-su-button>
+        </div>
+    </div>
+</div>
+
+@include('theme::assets')
+
 </body>
 </html>
