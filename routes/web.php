@@ -13,9 +13,5 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
-Route::get('/', function () {
-    return view('welcome');
-});
-
-Route::get('/test', [\App\Http\Controllers\TestController::class, 'index']);
-Route::post('/test', [\App\Http\Controllers\TestController::class, 'change']);
+Route::get('/theme/{theme}/{group}/{component}', [\App\Http\Controllers\DocumentationController::class, 'component'])
+    ->name('component');
