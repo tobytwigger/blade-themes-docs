@@ -31,7 +31,7 @@ class ExampleSchema
      *
      * @var array|mixed[]
      */
-    private $values;
+    private $attributeValues;
     /**
      * An array of slots to set on the component
      *
@@ -42,14 +42,14 @@ class ExampleSchema
     public static function create(string $name = null,
                                   string $description = null,
                                   array $tips = [],
-                                  array $values = [],
+                                  array $attributeValues = [],
                                   array $slots = [])
     {
         $schema = new static();
         $schema->setName($name);
         $schema->setDescription($description);
         $schema->setTips($tips);
-        $schema->setValues($values);
+        $schema->setAttributeValues($attributeValues);
         $schema->setSlots($slots);
         return $schema;
     }
@@ -105,17 +105,17 @@ class ExampleSchema
     /**
      * @return array|mixed[]
      */
-    public function getValues()
+    public function getAttributeValues()
     {
-        return $this->values;
+        return $this->attributeValues;
     }
 
     /**
-     * @param array|mixed[] $values
+     * @param array|mixed[] $attributeValues
      */
-    public function setValues($values): void
+    public function setAttributeValues($attributeValues): void
     {
-        $this->values = $values;
+        $this->attributeValues = $attributeValues;
     }
 
     /**
@@ -133,4 +133,33 @@ class ExampleSchema
     {
         $this->slots = $slots;
     }
+
+    public function htmlAttributes()
+    {
+        return collect($this->getAttributeValues())
+            ->map(function($value, $key) {
+                return sprintf('%s="%s"', $key, $value);
+            })
+            ->join(' ');
+    }
+
+    public function htmlSlots()
+    {
+        return collect($this->getSlots())
+            ->map(function($value, $key) {
+                if($key === SlotSchema::NO_KEY) {
+                    return sprintf('%s', $value);
+                }
+                return sprintf('<x-slot name="%s">%s</x-slot>', $key, $value);
+            })
+            ->join(PHP_EOL);
+    }
+
+    public function htmlForComponent(string $componentKey, string $prefix)
+    {
+        return sprintf(
+            '<x-%s-%s %s>%s</x-%s-%s>',
+        $prefix, $componentKey, $this->htmlAttributes(), $this->htmlSlots(), $prefix, $componentKey);
+    }
+
 }

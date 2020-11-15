@@ -2,14 +2,11 @@
 
 namespace App\Http\Controllers;
 
-use App\Services\DocSchema\Generator;
-use App\Services\DocSchema\Schema\AttributeSchema;
-use App\Services\DocSchema\Schema\ComponentSchema;
-use App\Services\DocSchema\Schema\ExampleSchema;
-use App\Services\DocSchema\Schema\GroupSchema;
-use App\Services\DocSchema\Schema\SlotSchema;
+use App\Services\DocSchema\Factory\ThemeSchemaFactory;
+use App\Services\DocSchema\Schema;
 use Illuminate\Http\Request;
 use Twigger\Blade\Foundation\ThemeLoader;
+use Twigger\Blade\Foundation\ThemeStore;
 
 class DocumentationController extends Controller
 {
@@ -17,16 +14,18 @@ class DocumentationController extends Controller
     public function component(string $theme,
                               string $group,
                               string $component,
-                              Request $request,
                               ThemeLoader $themeLoader,
-                              Generator $generator)
+                              ThemeSchemaFactory $schemaFactory,
+                              ThemeStore $themeStore)
     {
         // Load theme
         $themeLoader->useTagPrefix('docs');
         $themeLoader->load($theme);
 
+        $themeDefinition = $themeStore->getTheme($theme);
+
         return view('component', [
-            'schema' => $generator->generate(),
+            'themeSchema' => $schemaFactory->create($themeDefinition),
             'component' => $component,
             'group' => $group
         ]);

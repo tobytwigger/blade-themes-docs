@@ -2,20 +2,22 @@
 
 namespace App\Services\DocSchema\Schema;
 
-class GroupSchema
+class ThemeSchema
 {
 
     /**
-     * Name of the group
+     * The name of the theme
      *
      * @var string
      */
     private $name;
 
     /**
-     * @var ComponentSchema[]
+     * The id of the theme
+     *
+     * @var string
      */
-    private $components = [];
+    private $id;
 
     /**
      * @return string
@@ -34,6 +36,22 @@ class GroupSchema
     }
 
     /**
+     * @return string
+     */
+    public function getId(): string
+    {
+        return $this->id;
+    }
+
+    /**
+     * @param string $id
+     */
+    public function setId(string $id): void
+    {
+        $this->id = $id;
+    }
+
+    /**
      * @return ComponentSchema[]
      */
     public function getComponents(): array
@@ -49,14 +67,11 @@ class GroupSchema
         $this->components = $components;
     }
 
-    public static function create(string $name = null,
-                                  array $components = [])
-    {
-        $schema = new static();
-        $schema->setName($name);
-        $schema->setComponents($components);
-        return $schema;
-    }
+    /**
+     * Components of components the theme has
+     *
+     * @var ComponentSchema[]
+     */
+    private $components = [];
 
 }
-

@@ -5,6 +5,8 @@ namespace App\Services\DocSchema\Schema;
 class SlotSchema
 {
 
+    const NO_KEY = 'no_key';
+
     /**
      * The name of the slot
      *
@@ -72,6 +74,14 @@ class SlotSchema
     public function setDescription(string $description): void
     {
         $this->description = $description;
+    }
+
+    public function htmlForComponent(string $component, string $prefix)
+    {
+        if($this->getKey() === static::NO_KEY) {
+            return sprintf('<x-%s-%s>...</x-%s-%s>', $prefix, $component, $prefix, $component);
+        }
+        return sprintf('<x-%s-%s><x-slot name="%s">...</x-slot></x-%s-%s>', $prefix, $component, $this->getKey(), $prefix, $component);
     }
 
     public static function create(string $name = null,
