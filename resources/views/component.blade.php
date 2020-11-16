@@ -5,7 +5,6 @@
     <br/><hr/><br/>
 
     <h2>{{$themeSchema->getName()}}</h2>
-@dd($themeSchema)
     @foreach($themeSchema->getComponents() as $component)
         <h3>{{$component->getName()}}</h3>
 
