@@ -53,20 +53,6 @@
             {{$slot->getDescription()}}
             <h6>Usage</h6>
             <pre><code>{{$slot->htmlForComponent($component->getKey(), 'su')}}</code></pre>
-            <h6>Allowed values</h6>
-            @foreach($attribute->getAllowedValues() as $allowedValue)
-                {{$attribute->getKey()}}="{{$allowedValue->getValue()}}"
-
-                {{$allowedValue->getDescription()}}
-
-                @if(count($allowedValue->getTips()) > 0)
-                    <ul>
-                        @foreach($allowedValue->getTips() as $tip)
-                            <li>{{$tip}}</li>
-                        @endforeach
-                    </ul>
-                @endif
-            @endforeach
         @endforeach
 
         <h4>Examples</h4>

@@ -5,6 +5,7 @@ namespace App\Services\DocSchema\Parser;
 use Closure;
 use Doctrine\Common\Annotations\Reader;
 use Exception;
+use Illuminate\Support\Arr;
 use ReflectionClass;
 use Twigger\Blade\Docs\BaseAnnotation;
 use Twigger\Blade\Foundation\SchemaDefinition;
@@ -15,7 +16,7 @@ abstract class BaseComponentParser
     /**
      * @var Reader
      */
-    private $annotationReader;
+    protected $annotationReader;
 
     public function __construct(Reader $annotationReader)
     {
@@ -71,6 +72,30 @@ abstract class BaseComponentParser
             }
             return null;
         }, null);
+    }
+
+    /**
+     * @param string $componentClass
+     * @param string $property
+     * @param string $annotation
+     * @return BaseAnnotation[]
+     * @throws \ReflectionException
+     */
+    public function getPropertyAnnotations(string $componentClass, string $property, string $annotation): array
+    {
+        $results = [];
+        $annotationArrays = $this->sumClassTree($componentClass, function ($class) use ($annotation, $property) {
+            $reflectionClass = new ReflectionClass($class);
+            if($reflectionClass->hasProperty($property)) {
+                $reflectionProperty = $reflectionClass->getProperty($property);
+                return array_values(array_filter($this->annotationReader->getPropertyAnnotations(
+                    $reflectionProperty
+                ), function($property) use ($annotation){
+                    return $property instanceof $annotation;
+                }));
+            }
+            return [];
+        });
     }
 
     public function scanClassTree(string $startingClass, Closure $extractor, $default = null)

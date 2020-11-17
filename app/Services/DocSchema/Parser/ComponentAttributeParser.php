@@ -4,8 +4,10 @@ namespace App\Services\DocSchema\Parser;
 
 use App\Services\DocSchema\Schema\AllowedValueSchema;
 use App\Services\DocSchema\Schema\AttributeSchema;
+use Doctrine\Common\Annotations\Reader;
 use Illuminate\Support\Arr;
 use Psy\Util\Str;
+use Twigger\Blade\Docs\DocAllowedValue;
 use Twigger\Blade\Docs\DocDescription;
 use Twigger\Blade\Docs\DocName;
 
@@ -18,10 +20,7 @@ class ComponentAttributeParser extends BaseComponentParser
 
     public function getValue(string $componentClass)
     {
-        // Iterate through every public property. For each one, get the var name, then the name and description attribute
-
         $attributes = [];
-
 
         $childClass = new \ReflectionClass($componentClass);
         $props = $childClass->getProperties(\ReflectionProperty::IS_PUBLIC);
@@ -49,64 +48,45 @@ class ComponentAttributeParser extends BaseComponentParser
 
             $attribute->setKey($prop->getName());
 
-//            $attribute->setAllowedValues();
+            $startingClass = $componentClass;
+            $allAllowedValues = [];
+            $this->scanClassTree($startingClass, function($class) use ($prop, &$allAllowedValues) {
+                $reflectionClass = new \ReflectionClass($class);
+                if($reflectionClass->hasProperty($prop->getName())) {
+                    $reflectionProperty = $reflectionClass->getProperty($prop->getName());
+                    $allAllowedValues[] = array_values(array_filter($this->annotationReader->getPropertyAnnotations(
+                        $reflectionProperty
+                    ), function($property){
+                        return $property instanceof DocAllowedValue;
+                    }));
+                }
+            }, []);
+
+            $allowedValues = [];
+            $processedValues = [];
+            foreach($allAllowedValues as $allowedValueFromClass)
+            {
+                foreach($allowedValueFromClass as $allowedValue) {
+                    if(!in_array($allowedValue->value, $processedValues)) {
+                        $allowedValues[] = $allowedValue;
+                        $processedValues[] = $allowedValue->value;
+                    }
+                }
+            }
+
+            $allowedValues = array_map(function(DocAllowedValue $allowedValue) {
+                return AllowedValueSchema::create(
+                    $allowedValue->value,
+                    $allowedValue->description,
+                    $allowedValue->tips
+                );
+            }, $allowedValues);
+
+            $attribute->setAllowedValues($allowedValues);
+
             $attributes[] = $attribute;
         }
 
         return $attributes;
-
-        $type = Arr::last(explode('\\', $componentClass));
-        if($type === 'Button') {
-            return [
-                AttributeSchema::create(
-                    'Type', 'type', 'The type of button',
-                    [
-                        AllowedValueSchema::create('success', 'Successful', [
-                            'Used for an action which will make an expected change', 'Also for...'
-                        ]),
-                        AllowedValueSchema::create('danger', 'Danger', [
-                            'Used for an action which will make an unreversible change', 'Also for...'
-                        ]),
-                        AllowedValueSchema::create('info', 'Info', [
-                            'Used for a toggle', 'Also for...'
-                        ])
-                    ]
-                ),
-                AttributeSchema::create(
-                    'Dark Mode', 'dark', 'Whether to use the dark theme',
-                    [
-                        AllowedValueSchema::create('true', 'True', [
-                            'Use the dark mode'
-                        ]),
-                        AllowedValueSchema::create('false', 'False', [
-                            'Use the light mode'
-                        ])
-                    ]
-                )
-            ];
-        }
-        return [
-            AttributeSchema::create(
-                'Items', 'items', 'The items for the select',
-                [
-                    AllowedValueSchema::create(
-                        json_encode([['label' => 'Item 1', 'value' => 1], ['label' => 'Item 2', 'value' => 2]]),
-                        'Multiple select options',
-                        ['something here']
-                    )
-                ]
-            ),
-            AttributeSchema::create(
-                'Dark Mode', 'dark', 'Whether to use the dark theme',
-                [
-                    AllowedValueSchema::create('true', 'True', [
-                        'Use the dark mode'
-                    ]),
-                    AllowedValueSchema::create('false', 'False', [
-                        'Use the light mode'
-                    ])
-                ]
-            )
-        ];
     }
 }

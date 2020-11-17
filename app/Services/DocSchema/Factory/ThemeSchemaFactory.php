@@ -39,9 +39,9 @@ class ThemeSchemaFactory
         $themeSchema->setId($themeDefinition->id());
         $themeSchema->setComponents(
             collect($this->schemaStore->allSchemas())
-                ->map(function($schema) {
+                ->map(function($schema) use ($themeDefinition) {
                     return $this->componentSchemaFactory->create(
-                        $this->componentLocator->getImplementationClassFromSchema($schema)
+                        $this->componentLocator->getComponentClassFromTag($themeDefinition, $schema::tag())
                     );
                 })
                 ->toArray()

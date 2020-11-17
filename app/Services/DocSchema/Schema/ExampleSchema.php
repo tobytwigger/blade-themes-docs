@@ -2,6 +2,8 @@
 
 namespace App\Services\DocSchema\Schema;
 
+use Twigger\Blade\Docs\DocSlot;
+
 class ExampleSchema
 {
 
@@ -138,7 +140,7 @@ class ExampleSchema
     {
         return collect($this->getAttributeValues())
             ->map(function($value, $key) {
-                return sprintf('%s="%s"', $key, $value);
+                return sprintf('%s="%s"', $key, (is_array($value) ? json_encode($value) : $value));
             })
             ->join(' ');
     }
@@ -147,7 +149,7 @@ class ExampleSchema
     {
         return collect($this->getSlots())
             ->map(function($value, $key) {
-                if($key === SlotSchema::NO_KEY) {
+                if($key === DocSlot::NO_KEY) {
                     return sprintf('%s', $value);
                 }
                 return sprintf('<x-slot name="%s">%s</x-slot>', $key, $value);

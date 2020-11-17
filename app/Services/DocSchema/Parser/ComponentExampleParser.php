@@ -3,55 +3,44 @@
 namespace App\Services\DocSchema\Parser;
 
 use App\Services\DocSchema\Schema\ExampleSchema;
-use App\Services\DocSchema\Schema\SlotSchema;
-use Illuminate\Support\Arr;
+use Twigger\Blade\Docs\DocExample;
 
 class ComponentExampleParser extends BaseComponentParser
 {
 
     public function getValue(string $componentClass)
     {
-        $type = Arr::last(explode('\\', $componentClass));
-        if($type === 'Button') {
-            return [
-                ExampleSchema::create('Successful Button', 'A successful button example',
-                    [
-                        'Useful for xyz',
-                        'Can use any other type'
-                    ],
-                    [
-                        'type' => 'success'
-                    ],
-                    [
-                        SlotSchema::NO_KEY => '<strong>Button</strong> Content'
-                    ]
-                )
-            ];
+        $allExamples = [];
+
+        $this->scanClassTree($componentClass, function ($class) use (&$allExamples) {
+            $reflectionClass = new \ReflectionClass($class);
+            $allExamples[] = array_values(array_filter($this->annotationReader->getClassAnnotations(
+                $reflectionClass
+            ), function ($property) {
+                return $property instanceof DocExample;
+            }));
+        }, []);
+
+        $examples = [];
+        $processedValues = [];
+        foreach ($allExamples as $examplesFromClass) {
+            foreach ($examplesFromClass as $example) {
+                if (!in_array($example->name, $processedValues)) {
+                    $examples[] = $example;
+                    $processedValues[] = $example->name;
+                }
+            }
         }
-        return [
-            ExampleSchema::create('Example Option', 'Some select dropdown',
-                [
-                    'Useful for xyz',
-                    'Can add or remove options'
-                ],
-                [
-                    'items' => json_encode([
-                        [
-                            'label' => 'First option',
-                            'value' => 1
-                        ],
-                        [
-                            'label' => 'Second option',
-                            'value' => 2
-                        ],
-                        [
-                            'label' => 'Third option',
-                            'value' => 3
-                        ],
-                    ])
-                ],
-                []
-            )
-        ];
+
+        return array_map(function (DocExample $example) {
+            return ExampleSchema::create(
+                $example->name,
+                $example->description,
+                $example->tips,
+                $example->attributeValues,
+                $example->getSlots()
+            );
+        }, $examples);
     }
+
 }

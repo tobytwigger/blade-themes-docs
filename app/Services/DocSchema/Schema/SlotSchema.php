@@ -2,10 +2,10 @@
 
 namespace App\Services\DocSchema\Schema;
 
+use Twigger\Blade\Docs\DocSlot;
+
 class SlotSchema
 {
-
-    const NO_KEY = 'no_key';
 
     /**
      * The name of the slot
@@ -78,7 +78,7 @@ class SlotSchema
 
     public function htmlForComponent(string $component, string $prefix)
     {
-        if($this->getKey() === static::NO_KEY) {
+        if($this->getKey() === DocSlot::NO_KEY) {
             return sprintf('<x-%s-%s>...</x-%s-%s>', $prefix, $component, $prefix, $component);
         }
         return sprintf('<x-%s-%s><x-slot name="%s">...</x-slot></x-%s-%s>', $prefix, $component, $this->getKey(), $prefix, $component);
