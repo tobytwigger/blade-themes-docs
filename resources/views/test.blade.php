@@ -14,17 +14,21 @@
         @csrf
         <div class="row">
             <div class="col-3">
-                <x-su-select :items="$themes"></x-su-select>
+                <x-theme-select
+                    id="id"
+                    name="id"
+                    :items="$themes"></x-theme-select>
             </div>
             <div class="col-3">
-                <x-su-button type="success">Choose Theme</x-su-button>
+                <x-theme-button variant="success">Choose Theme</x-theme-button>
             </div>
         </div>
     </form>
 
 </div>
 
-@include('theme::assets')
+@include('theme::styles')
+@include('theme::scripts')
 
 </body>
 </html>

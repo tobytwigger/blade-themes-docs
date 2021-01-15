@@ -6,10 +6,10 @@ use App\Services\DocSchema\Schema\AllowedValueSchema;
 use App\Services\DocSchema\Schema\AttributeSchema;
 use Doctrine\Common\Annotations\Reader;
 use Illuminate\Support\Arr;
-use Psy\Util\Str;
 use Twigger\Blade\Docs\DocAllowedValue;
 use Twigger\Blade\Docs\DocDescription;
 use Twigger\Blade\Docs\DocName;
+use Illuminate\Support\Str;
 
 class ComponentAttributeParser extends BaseComponentParser
 {
@@ -46,7 +46,7 @@ class ComponentAttributeParser extends BaseComponentParser
                 $attribute->setDescription('No description given');
             }
 
-            $attribute->setKey($prop->getName());
+            $attribute->setKey(Str::kebab($prop->getName()));
 
             $startingClass = $componentClass;
             $allAllowedValues = [];

@@ -1,5 +1,8 @@
 <?php
 
+use App\Http\Controllers\DemoController;
+use App\Http\Controllers\DemoLayoutController;
+use App\Http\Controllers\TestController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -16,5 +19,11 @@ use Illuminate\Support\Facades\Route;
 Route::get('/theme/{theme}/{group}/{component}', [\App\Http\Controllers\DocumentationController::class, 'component'])
     ->name('component');
 
-Route::get('/test', [\App\Http\Controllers\TestController::class, 'index']);
-Route::post('/test', [\App\Http\Controllers\TestController::class, 'change']);
+Route::get('/test', [TestController::class, 'index']);
+Route::post('/test', [TestController::class, 'change']);
+
+Route::get('/demo', [DemoController::class, 'show']);
+
+Route::prefix('/demo/layout/')->group(function() {
+    Route::get('splash', [DemoLayoutController::class, 'splash']);
+});

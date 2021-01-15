@@ -16,11 +16,7 @@ class TestController extends Controller
                 [
                     'label' => 'Bootstrap',
                     'value' => 'bootstrap'
-                ],
-                [
-                    'label' => 'Material',
-                    'value' => 'material'
-                ],
+                ]
             ]
         ]);
     }

@@ -27,8 +27,8 @@
             {{$attribute->getDescription()}}
             <h6>Usage</h6>
             <pre><code>
-                {{'<x-su-' . $component->getKey() . ' ' . $attribute->getKey() . '="' . $attribute->getExampleValue() . '">' }}
-                {{'</x-su-' . $component->getKey() . '>' }}
+                {{'<x-theme-' . $component->getKey() . ' ' . $attribute->getKey() . '="' . $attribute->getExampleValue() . '">' }}
+                {{'</x-theme-' . $component->getKey() . '>' }}
             </code></pre>
             <h6>Allowed values</h6>
             @foreach($attribute->getAllowedValues() as $allowedValue)

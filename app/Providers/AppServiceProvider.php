@@ -21,7 +21,6 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        ThemeServiceProvider::useTheme(request()->get('theme', 'material'));
         $this->app->bind(ComponentSchemaFactory::class, function($app) {
             return new ComponentSchemaFactory(
                 $app->make(ComponentNameParser::class),
